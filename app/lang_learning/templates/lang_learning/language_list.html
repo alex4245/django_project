@@ -1,0 +1,8 @@
+{% block content %}
+    <h2>Language list</h2>
+    <ul>
+        {% for language in object_list %}
+             <li>{{ language.name }} - {{ language.shortcut }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
