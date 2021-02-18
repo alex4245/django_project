@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>User word list</h2>
+    <ul>
+        {% for user_word in object_list %}
+             <li>{{ user_word.word.name }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

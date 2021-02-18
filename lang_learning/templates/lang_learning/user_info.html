@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{{ user.username }}</h1>
+    <h4>User language list</h4>
+    <ul>
+        {% for ul in user_language_list %}
+             <li>{{ ul.language.name }} - {{ ul.language.shortcut }}</li>
+        {% endfor %}
+    </ul>
+    <div class="modal fade" tabindex="-1" role="dialog" id="modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+
+    <button class="add-user-word btn btn-primary" type="button" name="button">Add word</button>
+    <button class="change-user-language btn btn-primary" type="button" name="button">Change language</button>
+    <button class="add-user-language btn btn-primary" type="button" name="button">Add language</button>
+    <script type="text/javascript">
+        $(function () {
+	        $(".add-user-word").modalForm({formURL: "{% url 'lang_learning:user_word_create' %}"});
+        });
+        $(function () {
+	        $(".change-user-language").modalForm({formURL: "{% url 'lang_learning:change_user_language_modal' %}"});
+        });
+        $(function () {
+	        $(".add-user-language").modalForm({formURL: "{% url 'lang_learning:user_language_create' %}"});
+        });
+    </script>
+{% endblock %}

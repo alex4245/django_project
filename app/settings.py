@@ -29,12 +29,13 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.1.1']
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'accounts.apps.AccountsConfig',
     'lang_learning.apps.LangLearningConfig',
     'bootstrap_modal_forms',
     'django.contrib.admin',
@@ -121,3 +122,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'root')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'boot'),
 ]
+
+LOGIN_REDIRECT_URL = 'lang_learning:user_info'
+
+LOGOUT_REDIRECT_URL = 'login'
