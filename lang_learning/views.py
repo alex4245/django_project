@@ -1,8 +1,7 @@
 from django.views.generic import ListView, View, FormView
 from django.urls import reverse_lazy
 from bootstrap_modal_forms.generic import BSModalCreateView
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.models import User
+from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Language, UserLanguage, UserWord, Word
@@ -15,14 +14,17 @@ class LanguageList(ListView):
 
 class UserInfo(LoginRequiredMixin, View):
     def get(self, request):
-        user_id = request.user.id
-        user_language_list = UserLanguage.objects.filter(user_id=user_id).select_related('language')
-        user = get_object_or_404(User, pk=user_id)
+        user = request.user
+        user_language_list = UserLanguage.objects.filter(
+            user_id=user.id
+        )
         context = {
             "user_language_list": user_language_list,
             "user": user
         }
         return render(request, 'lang_learning/user_info.html', context)
+        # response.set_cookie('user', user.id)
+        # return response
 
 
 class UserWordCreateModalForm(LoginRequiredMixin, BSModalCreateView):
@@ -33,7 +35,7 @@ class UserWordCreateModalForm(LoginRequiredMixin, BSModalCreateView):
 
     def form_valid(self, form):
         user_id = self.request.user.id
-        user_language = UserLanguage.objects.filter(user_id=user_id, active=True).get()
+        user_language = UserLanguage.active(user_id=user_id)
         form.instance.user_id = user_id
         form.instance.language_id = user_language.language_id
         response = super().form_valid(form)
@@ -51,10 +53,10 @@ class ChangeUserLanguageModalForm(LoginRequiredMixin, FormView):
         user_id = self.request.user.id
         user_language_id = form.data['user_language']
         ul = UserLanguage.objects.filter(user_id=user_id)
-        active_languages = ul.filter(active=True)
+        active_languages = ul.filter(is_active=True)
         if len(active_languages) != 1 or active_languages[0] != user_language_id:
-            active_languages.update(active=False)
-            ul.filter(language=user_language_id).update(active=True)
+            active_languages.update(is_active=False)
+            ul.filter(language=user_language_id).update(is_active=True)
         return super().form_valid(form)
 
     def get_form_kwargs(self):
@@ -82,4 +84,7 @@ class UserWordList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user_id = self.request.user.id
-        return UserWord.objects.filter(user_id=user_id)
+        user_language = UserLanguage.active(user_id=user_id)
+        return UserWord.objects.filter(
+            user_id=user_id, word__language__id=user_language.id
+        )

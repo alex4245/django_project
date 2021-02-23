@@ -15,7 +15,11 @@ class Language(Timestampable, models.Model):
 class UserLanguage(Timestampable, models.Model):
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
+
+    @classmethod
+    def active(cls, **kwargs):
+        return cls.objects.get(is_active=True, **kwargs)
 
     class Meta:
         unique_together = ('language', 'user')
